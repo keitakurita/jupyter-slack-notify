@@ -1,4 +1,4 @@
-# slack_tools
+# Slack Tools in Python
 Some useful tools to use with slack  
 
 ## How to use
