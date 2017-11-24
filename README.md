@@ -1,3 +1,7 @@
+[![pypiv](https://img.shields.io/pypi/v/jupyter_slack.svg)](https://pypi.python.org/pypi/jupter_slack)
+[![pyv](https://img.shields.io/pypi/pyversions/jupyter_slack.svg)](https://pypi.python.org/pypi/jupyter_slack)
+[![License](https://img.shields.io/pypi/l/jupyter_slack.svg)](https://pypi.python.org/pypi/jupyter_slack)
+
 # Jupyter Slack Notifier
 Tired of constantly checking your jupyter notebook to see if your code has finished executing?  
 Frustrated by checking your code after waiting hours, only to see your code failed in 5 minutes?  
