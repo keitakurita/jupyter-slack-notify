@@ -35,5 +35,8 @@ class MessengerMagics(ExecutionMagics):
             notify_self("Error while {}: {}".format(args.message, e))
             raise e
 
-ip = get_ipython()
-ip.register_magics(MessengerMagics)
+try:
+    ip = get_ipython()
+    ip.register_magics(MessengerMagics)
+except:
+    pass
