@@ -28,15 +28,10 @@ class MessengerMagics(ExecutionMagics):
     @magic_arguments.argument("message", type=str)
     def notify(self, line="", cell=None):
         args = magic_arguments.parse_argstring(self.notify, line)
+        mess = args.message.replace("\"", "")
         try:
             self.shell.ex(cell)
-            notify_self("Finished {}".format(args.message))
+            notify_self("Finished {}".format(mess))
         except BaseException as e:
-            notify_self("Error while {}: {}".format(args.message, e))
+            notify_self("Error while {}: {}".format(mess, e.__repr__()))
             raise e
-
-try:
-    ip = get_ipython()
-    ip.register_magics(MessengerMagics)
-except:
-    pass
