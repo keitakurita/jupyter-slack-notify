@@ -22,5 +22,5 @@ https://api.slack.com/docs/oauth-test-tokens
 $ export SLACK_TOKEN=slack_token  
 $ export SLACK_ID=username  
 
-3. Install with pip
+3. Install with pip:  
 $ pip install jupyter_slack
