@@ -60,5 +60,5 @@ class MessengerMagics(ExecutionMagics):
                 mess += " in" + time_mess
             notify_self("Finished {}".format(mess))
         except BaseException as e:
-            notify_self("Error while {}: {}".format(mess, e.__repr__()))
+            notify_self("Error while {}:\n```\n{!r}\n```".format(mess, e))
             raise e
