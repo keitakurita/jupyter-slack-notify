@@ -3,3 +3,16 @@ import jupyter_slack
 
 def test_notify():
     jupyter_slack.notify_self("hello world")
+
+def test_context_manager_no_exception():
+    with jupyter_slack.Monitor("test no exception", time=False):
+        pass
+
+def test_context_manager_no_exception_time():
+    with jupyter_slack.Monitor("test no exception timed", time=True):
+        pass
+
+def test_context_manager_exceptin():
+    with pytest.raises(ValueError, match="AAAAA"):
+        with jupyter_slack.Monitor("test exception", time=False):
+            raise ValueError("AAAAA")
