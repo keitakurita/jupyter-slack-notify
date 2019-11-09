@@ -1,6 +1,7 @@
 import os
-import requests
 import time
+import warnings
+import requests
 from IPython.core import magic_arguments
 from IPython.core.magics import ExecutionMagics
 from IPython.core.magic import cell_magic, magics_class
@@ -15,6 +16,9 @@ def notify_self(message):
         slack_token = os.geten("SLACK_TOKEN")
         slack_id = os.getenv("SLACK_ID")
         if slack_token is not None and slack_id is not None:
+            warnings.warn("Slack tokens are a legacy feature and may be deprecated at any time: "
+                          "Consider moving to webhooks (see https://api.slack.com/messaging/webhooks) "
+                          "for more details")
             parameters = {
                 "token": slack_token,
                 "channel": "@" + slack_id,
