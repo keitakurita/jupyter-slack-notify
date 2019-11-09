@@ -7,15 +7,26 @@ from IPython.core.magic import cell_magic, magics_class
 
 
 def notify_self(message):
-    slack_token = os.environ["SLACK_TOKEN"]
-    slack_id = os.environ["SLACK_ID"]
-    parameters = {
-        "token": slack_token,
-        "channel": "@" + slack_id,
-        "text": message
-    }
-    r = requests.post("https://slack.com/api/chat.postMessage", params=parameters)
-    return r.text
+    slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+    if slack_webhook_url is not None:
+        r = requests.post(slack_webhook_url, json={"text": message})
+        return r.text
+    else:
+        slack_token = os.geten("SLACK_TOKEN")
+        slack_id = os.getenv("SLACK_ID")
+        if slack_token is not None and slack_id is not None:
+            parameters = {
+                "token": slack_token,
+                "channel": "@" + slack_id,
+                "text": message
+            }
+            r = requests.post("https://slack.com/api/chat.postMessage", params=parameters)
+            return r.text
+        else:
+            raise ValueError("Either $SLACK_WEBHOOK_URL must be set "
+                             "(see https://api.slack.com/messaging/webhooks) "
+                             "or both $SLACK_TOKEN and $SLACK_ID must be set "
+                             "(see https://api.slack.com/custom-integrations/legacy-tokens)")
 
 
 def construct_time_mess(elapsed):
