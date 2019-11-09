@@ -13,7 +13,7 @@ def notify_self(message):
         r = requests.post(slack_webhook_url, json={"text": message})
         return r.text
     else:
-        slack_token = os.geten("SLACK_TOKEN")
+        slack_token = os.getenv("SLACK_TOKEN")
         slack_id = os.getenv("SLACK_ID")
         if slack_token is not None and slack_id is not None:
             warnings.warn("Slack tokens are a legacy feature and may be deprecated at any time: "
