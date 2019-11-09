@@ -17,6 +17,20 @@ Import in your notebook and use like this:
 You should receive messages in slack like this:
 ![outcome](https://i.imgur.com/sidwVIm.png)
 
+You can also use the features within your code like this: 
+```python
+import jupyter_slack
+jupyter_slack.notify_self("hello world")
+```
+
+Or, if you want notifications when execution fails and/or know how long your command takes,
+you can use the following context manager: 
+```python
+import jupyter_slack
+with jupyter_slack.Monitor("hello world", time=True):
+    do_something()
+```
+
 ## Instructions
 
 ### Slack Apps
