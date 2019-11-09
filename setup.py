@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='jupyter_slack',
-    version='2.0.1',
+    version='2.1.0',
     packages=['jupyter_slack'],
     url='https://github.com/keitakurita/jupyter-slack-notify',
     license='MIT',
