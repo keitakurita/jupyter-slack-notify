@@ -2,6 +2,7 @@ import os
 import time
 import warnings
 import requests
+import traceback
 from IPython.core import magic_arguments
 from IPython.core.magics import ExecutionMagics
 from IPython.core.magic import cell_magic, magics_class
@@ -33,10 +34,10 @@ def notify_self(message):
                              "(see https://api.slack.com/custom-integrations/legacy-tokens)")
 
 class Monitor:
-    def __init__(self, msg, time=False, show_full_traceback=False):
+    def __init__(self, msg, time=False, send_full_traceback=False):
         self.msg = msg
         self.time = time
-        self.show_full_traceback = show_full_traceback
+        self.send_full_traceback = send_full_traceback
 
     @staticmethod
     def construct_time_mess(elapsed):
@@ -62,7 +63,7 @@ class Monitor:
         self._start = time.time()
         return self
 
-    def __exit__(self, exeception_type, exception_value, traceback):
+    def __exit__(self, exeception_type, exception_value, tb):
         if exception_value is None:
             if self.time:
                 elapsed = time.time() - self._start
@@ -71,9 +72,9 @@ class Monitor:
             notify_self(msg)
         else:
             msg = "Error while {}'\n```\n{!r}\n```".format(
-                self.msg, traceback if self.show_full_traceback else exception_value)
+                self.msg, traceback.format_tb(tb) if self.send_full_traceback else exception_value)
             notify_self(msg)
-            raise exception_value.with_traceback(traceback)
+            raise exception_value.with_traceback(tb)
 
 @magics_class
 class MessengerMagics(ExecutionMagics):
