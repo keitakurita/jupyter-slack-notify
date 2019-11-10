@@ -33,9 +33,10 @@ def notify_self(message):
                              "(see https://api.slack.com/custom-integrations/legacy-tokens)")
 
 class Monitor:
-    def __init__(self, msg, time=False):
+    def __init__(self, msg, time=False, show_full_traceback=False):
         self.msg = msg
         self.time = time
+        self.show_full_traceback = show_full_traceback
 
     @staticmethod
     def construct_time_mess(elapsed):
@@ -69,7 +70,8 @@ class Monitor:
             else: msg = "Finished {}".format(self.msg)
             notify_self(msg)
         else:
-            msg = "Error while {}'\n```\n{!r}\n```".format(self.msg, exception_value)
+            msg = "Error while {}'\n```\n{!r}\n```".format(
+                self.msg, traceback if self.show_full_traceback else exception_value)
             notify_self(msg)
             raise exception_value.with_traceback(traceback)
 
