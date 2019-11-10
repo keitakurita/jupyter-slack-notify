@@ -63,7 +63,7 @@ class Monitor:
         self._start = time.time()
         return self
 
-    def __exit__(self, exeception_type, exception_value, tb):
+    def __exit__(self, exception_type, exception_value, tb):
         if exception_value is None:
             if self.time:
                 elapsed = time.time() - self._start
@@ -71,8 +71,11 @@ class Monitor:
             else: msg = "Finished {}".format(self.msg)
             notify_self(msg)
         else:
-            msg = "Error while {}'\n```\n{!r}\n```".format(
-                self.msg, traceback.format_tb(tb) if self.send_full_traceback else exception_value)
+            if self.send_full_traceback:
+                trace = ''.join(traceback.format_exception(exception_type, exception_value, tb)).strip()
+            else:
+                trace = "{!r}".format(exception_value)
+            msg = "Error while {}'\n```\n{}\n```".format(self.msg, trace)
             notify_self(msg)
             raise exception_value.with_traceback(tb)
 
