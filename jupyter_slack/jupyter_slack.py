@@ -71,7 +71,7 @@ class Monitor:
         else:
             msg = "Error while {}'\n```\n{!r}\n```".format(self.msg, exception_value)
             notify_self(msg)
-            raise exception_value
+            raise exception_value.with_traceback(traceback)
 
 @magics_class
 class MessengerMagics(ExecutionMagics):
