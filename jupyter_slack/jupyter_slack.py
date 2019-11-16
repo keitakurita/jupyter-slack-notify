@@ -34,9 +34,10 @@ def notify_self(message):
                              "(see https://api.slack.com/custom-integrations/legacy-tokens)")
 
 class Monitor:
-    def __init__(self, msg, time=False, send_full_traceback=False):
+    def __init__(self, msg, time=False, send_full_traceback=False, send_on_start=False):
         self.msg = msg
         self.time = time
+        self.send_on_start = send_on_start
         self.send_full_traceback = send_full_traceback
 
     @staticmethod
@@ -61,6 +62,7 @@ class Monitor:
 
     def __enter__(self):
         self._start = time.time()
+        if self.send_on_start: notify_self(f"Started {self.msg}")
         return self
 
     def __exit__(self, exception_type, exception_value, tb):
