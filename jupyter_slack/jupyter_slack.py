@@ -34,11 +34,17 @@ def notify_self(message):
                              "(see https://api.slack.com/custom-integrations/legacy-tokens)")
 
 class Monitor:
-    def __init__(self, msg, time=False, send_full_traceback=False, send_on_start=False):
+    def __init__(self, msg, time=False,
+            send_full_traceback=False, send_on_start=False,
+            start_prefix="Started", end_prefix="Finished",
+            err_prefix="Error while"):
         self.msg = msg
         self.time = time
         self.send_on_start = send_on_start
         self.send_full_traceback = send_full_traceback
+        self.start_prefix = start_prefix
+        self.end_prefix = end_prefix
+        self.err_prefix = err_prefix
 
     @staticmethod
     def construct_time_mess(elapsed):
@@ -69,15 +75,15 @@ class Monitor:
         if exception_value is None:
             if self.time:
                 elapsed = time.time() - self._start
-                msg = "Finished {} in {}".format(self.msg, self.construct_time_mess(elapsed))
-            else: msg = "Finished {}".format(self.msg)
+                msg = "{} {} in {}".format(self.end_prefix, self.msg, self.construct_time_mess(elapsed))
+            else: msg = "{} {}".format(self.end_prefix, self.msg)
             notify_self(msg)
         else:
             if self.send_full_traceback:
                 trace = ''.join(traceback.format_exception(exception_type, exception_value, tb)).strip()
             else:
                 trace = "{!r}".format(exception_value)
-            msg = "Error while {}'\n```\n{}\n```".format(self.msg, trace)
+            msg = "{} {}'\n```\n{}\n```".format(self.err_prefix, self.msg, trace)
             notify_self(msg)
             raise exception_value.with_traceback(tb)
 
