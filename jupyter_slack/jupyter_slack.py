@@ -68,7 +68,7 @@ class Monitor:
 
     def __enter__(self):
         self._start = time.time()
-        if self.send_on_start: notify_self(f"Started {self.msg}")
+        if self.send_on_start: notify_self("{} {}".format(self.start_prefix, self.msg))
         return self
 
     def __exit__(self, exception_type, exception_value, tb):
