@@ -8,6 +8,18 @@ from IPython.core.magics import ExecutionMagics
 from IPython.core.magic import cell_magic, magics_class
 
 
+slack_accessible = "SLACK_WEBHOOK_URL" in os.environ or ("SLACK_TOKEN" in os.environ and "SLACK_ID" in os.environ)
+
+if not slack_accessible:
+    warnings.warn(
+        "Either $SLACK_WEBHOOK_URL must be set "
+        "(see https://api.slack.com/messaging/webhooks) "
+        "or both $SLACK_TOKEN and $SLACK_ID must be set "
+        "(see https://api.slack.com/custom-integrations/legacy-tokens). "
+        "All notifications will be noops under the current setting."
+    )
+
+
 def notify_self(message):
     slack_webhook_url = os.getenv("SLACK_WEBHOOK_URL")
     if slack_webhook_url is not None:
@@ -27,11 +39,8 @@ def notify_self(message):
             }
             r = requests.post("https://slack.com/api/chat.postMessage", params=parameters)
             return r.text, message
-        else:
-            raise ValueError("Either $SLACK_WEBHOOK_URL must be set "
-                             "(see https://api.slack.com/messaging/webhooks) "
-                             "or both $SLACK_TOKEN and $SLACK_ID must be set "
-                             "(see https://api.slack.com/custom-integrations/legacy-tokens)")
+        else: # do nothing, as we cannot connect to select
+            pass
 
 class Monitor:
     def __init__(self, msg, time=False,
