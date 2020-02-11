@@ -27,3 +27,19 @@ def test_context_manager_exception_tb():
     with pytest.raises(ValueError):
         with jupyter_slack.Monitor("test exception", time=False, send_full_traceback=True):
             error_fn()
+
+def test_decorater_exception_tb():
+    def external_fn():
+        raise ValueError("AAAAA")
+    @jupyter_slack.Monitor("test decorator exception", send_full_traceback=True)
+    def error_fn():
+        def inner_error_fn():
+            external_fn()
+        inner_error_fn()
+
+    with pytest.raises(ValueError):
+        error_fn()
+
+def test_silent():
+    with jupyter_slack.Monitor("silent! this should not be sent", silent=True):
+        pass

@@ -2,7 +2,10 @@ import os
 import time
 import warnings
 import requests
+import sys
 import traceback
+from functools import wraps
+
 from IPython.core import magic_arguments
 from IPython.core.magics import ExecutionMagics
 from IPython.core.magic import cell_magic, magics_class
@@ -46,7 +49,7 @@ class Monitor:
     def __init__(self, msg, time=False,
             send_full_traceback=False, send_on_start=False,
             start_prefix="Started", end_prefix="Finished",
-            err_prefix="Error while"):
+            err_prefix="Error while", silent=False):
         self.msg = msg
         self.time = time
         self.send_on_start = send_on_start
@@ -54,6 +57,7 @@ class Monitor:
         self.start_prefix = start_prefix
         self.end_prefix = end_prefix
         self.err_prefix = err_prefix
+        self.silent = silent
 
     @staticmethod
     def construct_time_mess(elapsed):
@@ -75,12 +79,17 @@ class Monitor:
             time_mess += " {} seconds".format(seconds)
         return time_mess
 
-    def __enter__(self):
+    def start(self):
+        """Start timer."""
         self._start = time.time()
-        if self.send_on_start: notify_self("{} {}".format(self.start_prefix, self.msg))
+        if not self.silent and self.send_on_start:
+            notify_self("{} {}".format(self.start_prefix, self.msg))
         return self
 
-    def __exit__(self, exception_type, exception_value, tb):
+    def end(self, exception_type, exception_value, tb):
+        """End timer, either due to successful execution or an error."""
+        if self.silent:
+            return
         if exception_value is None:
             if self.time:
                 elapsed = time.time() - self._start
@@ -95,6 +104,28 @@ class Monitor:
             msg = "{} {}'\n```\n{}\n```".format(self.err_prefix, self.msg, trace)
             notify_self(msg)
             raise exception_value.with_traceback(tb)
+
+
+    def __enter__(self):
+        return self.start()
+
+    def __exit__(self, exception_type, exception_value, tb):
+        self.end(exception_type, exception_value, tb)
+
+    def __call__(self, func):
+        """Decorate a function to provide the same behavior as with statement."""
+        @wraps(func)
+        def _inner(*args, **kwargs):
+            self.start()
+            try:
+                retval = func(*args, **kwargs)
+                self.end(None, None, None)
+            except:
+                err, err_cls, tb = sys.exc_info()
+                # get the traceback excluding this
+                # frame containing `_inner`
+                self.end(err, err_cls, tb.tb_next)
+        return _inner
 
 @magics_class
 class MessengerMagics(ExecutionMagics):
